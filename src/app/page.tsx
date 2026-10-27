@@ -1,102 +1,128 @@
-import Image from "next/image";
+import Image from 'next/image';
+import Link from 'next/link';
+import { redirect } from 'next/navigation';
+import { Camera, ChefHat, ShieldCheck, Target } from 'lucide-react';
+import { getCurrentUser } from '@/lib/supabase/server';
+import { getT } from '@/i18n/server';
+import { Logo } from '@/components/app/logo';
+import { LanguageSwitcher } from '@/components/app/language-switcher';
+import { ButtonLink } from '@/components/ui/button';
 
-export default function Home() {
+export default async function LandingPage() {
+  const { user } = await getCurrentUser();
+  if (user) redirect('/dashboard');
+  const t = await getT();
+
+  const steps = [
+    { icon: Target, title: t('landing.step1Title'), body: t('landing.step1Body') },
+    { icon: Camera, title: t('landing.step2Title'), body: t('landing.step2Body') },
+    { icon: ChefHat, title: t('landing.step3Title'), body: t('landing.step3Body') },
+  ];
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className="min-h-dvh">
+      <header className="mx-auto flex max-w-6xl items-center justify-between px-5 py-5 sm:px-8">
+        <Logo className="h-7 sm:h-8" priority />
+        <div className="flex items-center gap-3">
+          <LanguageSwitcher />
+          <Link href="/auth" className="hidden text-sm font-medium text-ink hover:text-rose-ink sm:inline">
+            {t('common.signIn')}
+          </Link>
         </div>
+      </header>
+
+      <main id="content">
+        <section className="mx-auto grid max-w-6xl items-center gap-10 px-5 pt-6 pb-16 sm:px-8 lg:grid-cols-[1fr_1.05fr] lg:pt-12">
+          <div>
+            <h1 className="font-display text-[2.6rem] leading-[1.02] font-semibold tracking-tight text-ink sm:text-[3.6rem]">{t('landing.title')}</h1>
+            <p className="mt-5 max-w-lg text-lg text-ink-soft">{t('landing.lead')}</p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <ButtonLink href="/auth" size="lg">
+                {t('landing.ctaStart')}
+              </ButtonLink>
+              <ButtonLink href="/recipes" variant="secondary" size="lg">
+                {t('landing.ctaRecipes')}
+              </ButtonLink>
+            </div>
+          </div>
+
+          <figure className="relative">
+            <div className="relative aspect-[5/4] overflow-hidden rounded-[2rem] shadow-lift">
+              <Image
+                src="https://images.unsplash.com/photo-1739217744880-472f59559cc5?auto=format&fit=crop&w=1400&q=75"
+                alt=""
+                fill
+                priority
+                sizes="(min-width: 1024px) 560px, 100vw"
+                className="object-cover"
+              />
+            </div>
+            {/* A worked example of a scan result, drawn over the photo. */}
+            <div className="absolute -bottom-6 start-4 w-[min(20rem,85%)] rounded-3xl border border-line bg-paper/95 p-4 shadow-lift backdrop-blur sm:start-8">
+              <p className="text-xs font-medium text-ink-soft">{t('scan.reviewTitle')}</p>
+              <ul className="mt-2 space-y-1.5 text-sm">
+                <li className="flex justify-between gap-3">
+                  <span>{t('landing.sampleItem1')}</span>
+                  <span className="tabular text-ink-soft">~180 g · 202 {t('common.kcal')}</span>
+                </li>
+                <li className="flex justify-between gap-3">
+                  <span>{t('landing.sampleItem2')}</span>
+                  <span className="tabular text-ink-soft">~150 g · 96 {t('common.kcal')}</span>
+                </li>
+                <li className="flex items-center justify-between gap-3 text-wheat-ink">
+                  <span>{t('landing.sampleQuestion')}</span>
+                  <span className="text-xs">{t('scan.confidence', { level: t('scan.confidence_low') })}</span>
+                </li>
+              </ul>
+            </div>
+            <figcaption className="mt-10 text-end text-xs text-ink-faint">{t('landing.photoCredit', { name: 'Mourad Harkat' })}</figcaption>
+          </figure>
+        </section>
+
+        <section className="border-y border-line bg-paper/60">
+          <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8">
+            <h2 className="font-display text-2xl font-semibold">{t('landing.stepsTitle')}</h2>
+            <ol className="mt-8 grid gap-8 md:grid-cols-3">
+              {steps.map((s, i) => (
+                <li key={s.title} className="flex gap-4">
+                  <span className="font-display text-3xl font-semibold text-rose tabular" aria-hidden>
+                    {i + 1}
+                  </span>
+                  <div>
+                    <h3 className="flex items-center gap-2 font-medium text-ink">
+                      <s.icon className="h-4 w-4 text-leaf-ink" aria-hidden />
+                      {s.title}
+                    </h3>
+                    <p className="mt-1.5 text-sm text-ink-soft">{s.body}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+
+        <section className="mx-auto grid max-w-6xl gap-10 px-5 py-16 sm:px-8 md:grid-cols-2">
+          <div>
+            <h2 className="font-display text-2xl font-semibold">{t('landing.honestTitle')}</h2>
+            <p className="mt-3 text-ink-soft">{t('landing.honestBody')}</p>
+          </div>
+          <div>
+            <h2 className="flex items-center gap-2 font-display text-2xl font-semibold">
+              <ShieldCheck className="h-6 w-6 text-leaf-ink" aria-hidden />
+              {t('landing.privacyTitle')}
+            </h2>
+            <p className="mt-3 text-ink-soft">{t('landing.privacyBody')}</p>
+          </div>
+        </section>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+
+      <footer className="border-t border-line">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-5 py-8 text-sm text-ink-soft sm:px-8">
+          <p className="max-w-xl text-xs">{t('common.medicalDisclaimer')}</p>
+          <Link href="/privacy" className="hover:text-ink">
+            {t('landing.footerPrivacy')}
+          </Link>
+        </div>
       </footer>
     </div>
   );

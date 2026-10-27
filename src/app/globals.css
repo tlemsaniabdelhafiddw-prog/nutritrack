@@ -1,26 +1,142 @@
-@import "tailwindcss";
+@import 'tailwindcss';
+@import '@fontsource-variable/bricolage-grotesque/wght.css';
+@import '@fontsource-variable/readex-pro/wght.css';
+
+/*
+  NutriTrack tokens — taken from the logo:
+  rose wordmark #E16D83, leaf #88AF79, blush paper #FEF5F3.
+  Rose is darkened for text and filled buttons so contrast stays AA.
+*/
+@theme {
+  --color-blush: #fef5f3;
+  --color-blush-deep: #fbe9e5;
+  --color-paper: #ffffff;
+  --color-line: #f0dcd7;
+  --color-line-strong: #e5c6bf;
+  --color-ink: #2b2326;
+  --color-ink-soft: #6e5e63;
+  --color-ink-faint: #a1918f;
+
+  --color-rose: #e16d83;
+  --color-rose-soft: #fbdfe4;
+  --color-rose-strong: #c24e68;
+  --color-rose-ink: #b4405a;
+
+  --color-leaf: #88af79;
+  --color-leaf-soft: #e4efdc;
+  --color-leaf-ink: #4e7a42;
+
+  --color-wheat: #d99a3c;
+  --color-wheat-soft: #f8ead3;
+  --color-wheat-ink: #8f5f17;
+  --color-olive: #7e9b5a;
+
+  /* Macro series — validated for CVD separation (dataviz validator, light surface). */
+  --color-protein: #d2566f;
+  --color-carbs: #c98a2e;
+  --color-fat: #1f8fa8;
+
+  --color-danger: #b42d3c;
+  --color-danger-soft: #fbe3e5;
+
+  --font-display: 'Bricolage Grotesque Variable', 'Readex Pro Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Readex Pro Variable', ui-sans-serif, system-ui, sans-serif;
+
+  --radius-card: 1.25rem;
+  --radius-field: 0.875rem;
+
+  --shadow-soft: 0 1px 2px rgb(43 35 38 / 0.04), 0 4px 16px -6px rgb(180 64 90 / 0.12);
+  --shadow-lift: 0 2px 4px rgb(43 35 38 / 0.05), 0 12px 32px -12px rgb(180 64 90 / 0.25);
+}
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  -webkit-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-blush);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Arabic reads better with the sans face for headings too, and a little more line height. */
+html[lang='ar'] body {
+  line-height: 1.75;
+}
+html[lang='ar'] .font-display {
+  font-family: var(--font-sans);
+  letter-spacing: 0;
+}
+
+:focus-visible {
+  outline: 2.5px solid var(--color-rose-strong);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Numbers and units stay left-to-right inside Arabic text. */
+.ltr-nums {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@keyframes ring-fill {
+  from {
+    stroke-dashoffset: var(--ring-full);
+  }
+}
+
+.ring-animate {
+  animation: ring-fill 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: var(--color-blush-deep);
+}
+.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.6), transparent);
+  animation: shimmer 1.4s infinite;
+}
+
+dialog::backdrop {
+  background: rgb(43 35 38 / 0.45);
+}
+
+input[type='number']::-webkit-inner-spin-button {
+  opacity: 0.5;
 }
